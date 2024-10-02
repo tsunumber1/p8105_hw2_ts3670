@@ -1,0 +1,131 @@
+---
+title: "P8105_hw2_ts3670"
+author: "Tong Su"
+date: "2024-10-02"
+output: github_document
+---
+```{r setup}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+```
+
+##Problem 1 - NYC Transit data
+
+Read in the NYC Transit data and clean the data.
+
+```{r}
+NYtrans_df = 
+  read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+                      na = c(".", "NA", ""),
+           col_types = cols(
+             Route8 = col_character(),
+             Route9 = col_character(),
+             Route10 = col_character(),
+             Route11 = col_character()
+             )
+           ) |>
+  janitor::clean_names() |>
+  select(line:entry, vending, ada) |>
+  mutate(entry = ifelse(entry=="YES",TRUE,FALSE))
+```
+
+```{r}
+skimr::skim(NYtrans_df)
+```
+
+- The cleaned data of NYC transit contains 19 variables: line, station_name, station_latitude, station_longitude, route 1:11, entry, vending, entrance_type, and ada. 
+- The cleaning process includes that addressing the data type of route 8:11, converting column names to lower snake case and converting the entry variable from charater variable to logical variable. 
+- The dimension of cleaned data is `r nrow(NYtrans_df)` x `r ncol(NYtrans_df)` 
+
+#Questions:
+How many distinct stations are there?
+```{r}
+distinct_stations = NYtrans_df |>
+  distinct(station_name, line) |>
+  nrow()
+```
+There are `r distinct_stations` stations.
+
+How many stations are ADA compliant?
+```{r}
+ada_compliant_stations = NYtrans_df |>
+  filter(ada == TRUE) |>
+  distinct(station_name, line) |>
+  nrow()
+```
+There are `r ada_compliant_stations` ADA compliant stations.
+
+What proportion of station entrances / exits without vending allow entrance?
+```{r}
+proportion_without_vending = NYtrans_df |> 
+  filter(vending == "NO") |> 
+  pull(entry) |> 
+  mean()
+```
+`r proportion_without_vending` of station entrances/exits without vending all entrance.
+
+How many distinct stations serve the A train?
+```{r}
+Atrain_df = NYtrans_df |> 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") |> 
+  filter(route == "A") |> 
+  select(station_name, line) |> 
+  distinct()
+```
+`r nrow(Atrain_df)` distinct stations serve A train.
+
+Of the stations that serve the A train, how many are ADA compliant?
+```{r}
+Atrain_ada_df = NYtrans_df |> 
+  pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") |> 
+  filter(route == "A", ada == TRUE) |> 
+  select(station_name, line) |> 
+  distinct()
+```
+`r nrow(Atrain_ada_df)` stations that serve A train are ADA compliant.
+
+##Problem 2 - Mr.Trash Wheel
+```{r}
+mrTW_df = 
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",skip = 1)|>
+  filter(!is.na(Dumpster)) |>
+  janitor::clean_names()|> 
+  select (-x15, -x16) |>
+  mutate(sports_balls = as.integer(round (sports_balls,0)),
+         year = as.double(year),
+         trash_wheel = "Mr"
+  )
+```
+
+```{r}
+profTW_df =
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1) |>
+  filter(!is.na(Dumpster)) |>
+  janitor::clean_names()|> 
+  mutate(trash_wheel = "Professor")
+```
+
+```{r}
+gwyTW_df =
+  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1) |>
+  filter(!is.na(Dumpster)) |>
+  janitor::clean_names()|> 
+  mutate(trash_wheel = "Gwynnda Trash Wheel")
+```
+
+```{r}
+combinedTW_df = bind_rows(mrTW_df,
+  profTW_df,
+  gwyTW_df
+)
+```
+
+In this combined data of "Mr Trash Wheel", "Professor Trash Wheel", and "Gwynnda Trash Wheel", we have `r nrow(combinedTW_df)` observations.
+
