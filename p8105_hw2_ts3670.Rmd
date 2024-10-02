@@ -117,7 +117,7 @@ gwyTW_df =
   read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1) |>
   filter(!is.na(Dumpster)) |>
   janitor::clean_names()|> 
-  mutate(trash_wheel = "Gwynnda Trash Wheel")
+  mutate(trash_wheel = "Gwynnda")
 ```
 
 ```{r}
@@ -127,5 +127,17 @@ combinedTW_df = bind_rows(mrTW_df,
 )
 ```
 
-In this combined data of "Mr Trash Wheel", "Professor Trash Wheel", and "Gwynnda Trash Wheel", we have `r nrow(combinedTW_df)` observations.
+```{r}
+total_weight_prof = combinedTW_df |>
+  filter(trash_wheel == "Professor") |>
+  summarise(total_weight_prof = sum(weight_tons, na.rm = TRUE))
+```
 
+```{r}
+cig_butts_gwynnda_june_2022 <- combinedTW_df |>
+  filter(trash_wheel == "Gwynnda", format(date, "%Y-%m") == "2022-06") |>
+  summarise(cig_butts_gwynnda_june_2022 = sum(cigarette_butts, na.rm = TRUE))
+```
+
+
+In this combined data of "Mr Trash Wheel", "Professor Trash Wheel", and "Gwynnda Trash Wheel", we have `r nrow(combinedTW_df)` observations.It has key variables like weight,volume, plastic bottles, cigarette butts, polystyrene, glass bottles, plastic bags, wrappers, sports balls and home powered. The total weight of trash collected by Professor Trash Wheel is `r total_weight_prof`.The total number of cigarette butts collected by Gwynnda in June of 2022 is `r cig_butts_gwynnda_june_2022`.
