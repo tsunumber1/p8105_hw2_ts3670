@@ -173,7 +173,7 @@ check_df2= bakers_df |>
   distinct("baker","series")
 check_df2
 ```
-
+In order to merge these 3 datasets to create a single, final dataset, I checked the completeness and correctness across datasets by anti_join and discorvered that there exists inconsistensy in the name of bakers in bakers_df and the other two. So I decide to remove the last name and change the colume name of "name" in bakers_df, keep their first name as "baker". Also, the baker Joanne's name were displayed differently across these three datasets so I changed them to Jo by removing the extra "" in bakes_df and "Joanne" in results_df to "Jo".
 ```{r}
 bakers_bakes_results_df = results_df |>
   left_join(bakers_df, by = c("baker", "series")) |>
@@ -188,15 +188,34 @@ file_path = file.path('./data/gbb_datasets/', "bakers_bakes_results.csv")
 
 write_csv(bakers_bakes_results_df, file_path)
 ```
+The full dataset merging by bakers.csv, bakes.csv, and results.csv has the dimension of 1136 obs x 11 variable, each observation including bake, baker, and result is represented as a row and arranged by seires and episodes.
+
+```{r}
+star_baker_df = bakers_bakes_results_df |>
+  filter(series >= 5 ) |>
+  select(series, episode, baker, result)|>
+  filter(result == c("WINNER","STAR BAKER")) |>
+  arrange(series, episode)
+star_baker_df
+```
 
 
+```{r}
+viewers_df = read_csv('./data/gbb_datasets/viewers.csv',
+                      na = c(".", "NA", ""))|>
+  janitor::clean_names()
 
+(head(viewers_df, 10))
+```
 
+```{r}
+avg_viewer_s1 = mean(viewers_df |> pull(series_1), na.rm = TRUE)
+avg_viewer_s1 
+```
+The average viewership in Season 1 is `r avg_viewer_s1`.
 
-
-
-
-
-
-
-
+```{r}
+avg_viewer_s5 = mean(viewers_df |> pull(series_5))
+avg_viewer_s5
+```
+The average viewership in Season 5 is `r avg_viewer_s5`.
