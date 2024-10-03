@@ -139,7 +139,63 @@ cig_butts_gwynnda_june_2022 <- combinedTW_df |>
   summarise(cig_butts_gwynnda_june_2022 = sum(cigarette_butts, na.rm = TRUE))
 ```
 
-
 In this combined data of "Mr Trash Wheel", "Professor Trash Wheel", and "Gwynnda Trash Wheel", we have `r nrow(combinedTW_df)` observations.It has key variables like weight,volume, plastic bottles, cigarette butts, polystyrene, glass bottles, plastic bags, wrappers, sports balls and home powered. The total weight of trash collected by Professor Trash Wheel is `r total_weight_prof`.The total number of cigarette butts collected by Gwynnda in June of 2022 is `r cig_butts_gwynnda_june_2022`.
 
 ##Problem 3 -  Great British Bake Off
+```{r}
+bakers_df = read_csv('./data/gbb_datasets/bakers.csv') |>
+  janitor::clean_names() |>
+  separate(baker_name, into = c("baker", "last_name")) 
+```
+
+```{r}
+bakes_df = read_csv('./data/gbb_datasets/bakes.csv') |>
+  janitor::clean_names() |>
+  mutate(baker = if_else(baker =='"Jo"',"Jo",baker))
+```
+
+```{r}
+results_df = read_csv('./data/gbb_datasets/results.csv', skip = 2) |>
+  janitor::clean_names() |>
+  mutate(baker = if_else(baker =="Joanne","Jo",baker))
+```
+
+```{r}
+check_df= bakers_df |>
+  anti_join(bakes_df, by = c("baker","series"))|>
+  distinct("baker","series")
+check_df
+```
+
+```{r}
+check_df2= bakers_df |>
+  anti_join(results_df, by = c("baker","series"))|>
+  distinct("baker","series")
+check_df2
+```
+
+```{r}
+bakers_bakes_results_df = results_df |>
+  left_join(bakers_df, by = c("baker", "series")) |>
+  left_join(bakes_df, by = c("baker", "series", "episode")) 
+
+bakers_bakes_results_df = bakers_bakes_results_df |>
+  arrange(series, episode)
+```
+
+```{r}
+write_csv(bakers_bakes_results_df,'./data/gbb_datasets/',
+          "bakers_bakes_results.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
