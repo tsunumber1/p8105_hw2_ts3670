@@ -94,7 +94,7 @@ Atrain_ada_df = NYtrans_df |>
 ##Problem 2 - Mr.Trash Wheel
 ```{r}
 mrTW_df = 
-  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",skip = 1)|>
+  read_excel("./data/202409 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",skip = 1)|>
   filter(!is.na(Dumpster)) |>
   janitor::clean_names()|> 
   select (-x15, -x16) |>
@@ -106,7 +106,7 @@ mrTW_df =
 
 ```{r}
 profTW_df =
-  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1) |>
+  read_excel("./data/202409 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", skip = 1) |>
   filter(!is.na(Dumpster)) |>
   janitor::clean_names()|> 
   mutate(trash_wheel = "Professor")
@@ -114,7 +114,7 @@ profTW_df =
 
 ```{r}
 gwyTW_df =
-  read_excel("./data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1) |>
+  read_excel("./data/202409 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", skip = 1) |>
   filter(!is.na(Dumpster)) |>
   janitor::clean_names()|> 
   mutate(trash_wheel = "Gwynnda")
@@ -141,3 +141,5 @@ cig_butts_gwynnda_june_2022 <- combinedTW_df |>
 
 
 In this combined data of "Mr Trash Wheel", "Professor Trash Wheel", and "Gwynnda Trash Wheel", we have `r nrow(combinedTW_df)` observations.It has key variables like weight,volume, plastic bottles, cigarette butts, polystyrene, glass bottles, plastic bags, wrappers, sports balls and home powered. The total weight of trash collected by Professor Trash Wheel is `r total_weight_prof`.The total number of cigarette butts collected by Gwynnda in June of 2022 is `r cig_butts_gwynnda_june_2022`.
+
+##Problem 3 -  Great British Bake Off
