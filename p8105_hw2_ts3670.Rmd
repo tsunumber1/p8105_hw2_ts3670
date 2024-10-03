@@ -184,8 +184,9 @@ bakers_bakes_results_df = bakers_bakes_results_df |>
 ```
 
 ```{r}
-write_csv(bakers_bakes_results_df,'./data/gbb_datasets/',
-          "bakers_bakes_results.csv")
+file_path = file.path('./data/gbb_datasets/', "bakers_bakes_results.csv")
+
+write_csv(bakers_bakes_results_df, file_path)
 ```
 
 
